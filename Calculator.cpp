@@ -1,57 +1,65 @@
 #include <String>
 #include <iostream>
 #include "Binary.h"
-
+#include "Stack.h"
+#include "Calculator.h"
 
 using namespace std;
 
-int countSpaces(string input) {
-    int spaces(0);
+
+int Calculator::countSpaces(string input) {
+    int numberOfSpaces(0);
     for (int i = 0; i < input.length(); i++)
-        if (input[i] == ' ') spaces += 1;
-    return spaces;
+        if (input[i] == ' ') numberOfSpaces += 1;
+    return numberOfSpaces;
 }
 
-void checkInput(string input) {
-    int operators(0), wrongMinuses(0);
+bool Calculator::isInputNotNull(string input) {
+    return !input.length() != 0;
+}
 
-    // The first character in the string is a space or an operator (wrong RPN case)
-    if (((input[0] == '*') || ((input[0] == '-') & (!isdigit(input[1]))) || (input[0] == '+') ||
-         (input[0] == ' ')))
-        throw 10;
+bool Calculator::isInputFirstCharacterCorrect(string input) {
+    return ((((input[0] == '*') || ((input[0] == '-') && (!isdigit(input[1]))) || (input[0] == '+') ||
+              (input[0] == ' '))));
+}
+
+bool Calculator::isCharacterBeforeAfterOperatorCorrect(string input) {
+    bool isCorrect = true;
+    for (int i = 1; i < input.length() - 1; i++)
+        if (((input[i] == '+') | (input[i] == '*') | ((input[0] == '-') && (!isdigit(input[1])))) &
+            ((input[i - 1] != ' ') && (input[i + 1] != ' '))) {
+            isCorrect = false;
+            throw 10;
+        }
+    return isCorrect;
+};
+
+bool Calculator::isNumberOfOperandsOperatorsCorrect(string input) {
+    int operators(0), wrongMinuses(0);
+    bool isCorrect = true;
 
     for (int i = 0; i < input.length(); i++)
-        // counting minuses that are not operators 
         if ((i != (input.length() - 1)) && (input[i] == '-') && (isdigit(input[i + 1])))
             wrongMinuses += 1;
-        else if (// The character is not a space, an operator or a decimal digit
-                (((isdigit(input[i]) == false) & (input[i] != ' ') &
-                  (!((input[i] == '*') || (input[i] == '-') || (input[i] == '+'))))) |
-                // whether the last character is not an operator
-                ((i == input.length() - 1) & (input[i] != '+') & (input[i] != '*') & (input[i] != '-')))
-            throw 10;
-
-
-    // The character preceding or following the operator is not a space
-    for (int i = 1; i < input.length() - 1; i++)
-        if (((input[i] == '+') | (input[i] == '*') | ((input[0] == '-') & (!isdigit(input[1])))) &
-            ((input[i - 1] != ' ') & (input[i + 1] != ' ')))
+        else if ((((isdigit(input[i]) == false) && (input[i] != ' ') &
+                                                   (!((input[i] == '*') || (input[i] == '-') || (input[i] == '+'))))) |
+                 ((i == input.length() - 1) && (input[i] != '+') && (input[i] != '*') && (input[i] != '-')))
             throw 10;
 
     for (int i = 0; i < input.length(); i++) {
-        // counting operators, including wrongMinuses
         if ((input[i] == '*') || (input[i] == '-') || (input[i] == '+')) operators += 1;
-        // The character following a value is not a space
         if (isdigit(input[i]))
             for (int j = i; j < input.length(); j++)
-                if ((!(isdigit(input[j]))) & (input[j] != ' ')) throw 10;
-                else if ((!(isdigit(input[j]))) & (input[j] == ' ')) break;
+                if ((!(isdigit(input[j]))) && (input[j] != ' ')) {
+                    isCorrect = false;
+                    throw 10;
+                } else if ((!(isdigit(input[j]))) && (input[j] == ' '))
+                    break;
     }
-    // counting operators, excluding wrongMinuses
+
     operators -= wrongMinuses;
-    // The counted number of operators is equal to a half of spaces in the performInput string
     if (operators != (countSpaces(input) / 2)) throw 10;
-    // The performInput string contains no operators or no values at all
+
     bool operatorsDetected(false), valuesDetected(false);
     for (int i = 0; i < input.length(); i++)
         if (isdigit(input[i])) valuesDetected = true;
@@ -59,50 +67,23 @@ void checkInput(string input) {
     if ((valuesDetected == false) || (operatorsDetected == false)) throw 10;
 }
 
-template<typename T>
-class Stack {
-public:
+void Calculator::checkInput(string input) {
+    if (isInputNotNull(input))
+        throw 10;
 
-    struct Node {
-        T data;
-        struct Node *next;
-    };
+    if (isInputFirstCharacterCorrect(input))
+        throw 10;
 
-    struct Node *top = NULL;
+    isCharacterBeforeAfterOperatorCorrect(input);
 
-    void push(T value) {
-        struct Node *newnode = (struct Node *) malloc(sizeof(struct Node));
-        newnode->data = value;
-        newnode->next = top;
-        top = newnode;
-    }
+    isNumberOfOperandsOperatorsCorrect(input);
+}
 
-    T pop() {
-        if (top == NULL) throw 10;
-        else {
-            T temp = T(0);
-            temp = top->data;
-            top = top->next;
-            return temp;
-        }
-    }
 
-    bool isEmpty() {
-        bool result;
-        return top == NULL;
-    }
-
-    void clear() {
-        T out = T(0);
-        do {
-            out = pop();
-        } while (!isEmpty());
-    }
-};
-
-void isOperator(Stack<Binary> &values, string input, int i, Binary n, Binary n2) {
+void Calculator::calculateOperation(Stack<Binary> &values, string input, int i, Binary n, Binary n2) {
     n2 = values.pop();
     n = values.pop();
+
     switch (input[i]) {
         case '+':
             n.add(n2, true);
@@ -119,9 +100,10 @@ void isOperator(Stack<Binary> &values, string input, int i, Binary n, Binary n2)
     values.push(n);
 }
 
-Binary calculate(Stack<Binary> &values, string input, bool permit) {
+Binary Calculator::calculate(Stack<Binary> &values, string input, bool permit) {
     Binary temp = Binary(0);
     Binary n(Binary(0)), n2(Binary(0));
+
     for (int i = 0; i < input.length() - 1; i++) {
         if ((isdigit(input[i])) | ((input[i] == '-') && (isdigit(input[i + 1])))) {
             for (int j = i; j < input.length() - 1; j++)
@@ -132,16 +114,18 @@ Binary calculate(Stack<Binary> &values, string input, bool permit) {
                     i = j - 1;
                     break;
                 }
-        } else if (((input[i] == '*') || ((input[i] == '-') && (!isdigit(input[i + 1]))) || (input[i] == '+')) & permit)
-            isOperator(values, input, i, n, n2);
+        } else if (((input[i] == '*') || ((input[i] == '-') && (!isdigit(input[i + 1]))) || (input[i] == '+')) &&
+                   permit)
+            calculateOperation(values, input, i, n, n2);
     }
-    isOperator(values, input, input.length() - 1, n, n2);
+    calculateOperation(values, input, input.length() - 1, n, n2);
     return values.pop();
 }
 
-void printBinary(Stack<Binary> &values, string input) {
-    cout << "\nThe expression in binary is: \n";
+void Calculator::printBinary(Stack<Binary> &values, string input) {
+    cout << "\nRPN in binary: \n";
     Binary temp = Binary(0);
+
     for (int i = 0; i < input.length(); i++) {
         if ((isdigit(input[i])) | ((input[i] == '-') && (isdigit(input[i + 1])))) {
             for (int j = i; j < input.length() - 1; j++)
@@ -156,5 +140,3 @@ void printBinary(Stack<Binary> &values, string input) {
     }
 }
 
-template
-class Stack<Binary>;

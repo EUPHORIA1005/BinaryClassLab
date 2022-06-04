@@ -1,35 +1,32 @@
 #ifndef ALGOLAB_CALCULATOR_H
 #define ALGOLAB_CALCULATOR_H
+
 #include "Binary.h"
-#include <String>
+#include <string>
+#include "Stack.h"
 
 using namespace std;
 
-void checkInput(string input);
-int countSpaces(string input);
+class Calculator {
+private:
+    int countSpaces(string input);
 
-template <typename T>
-class Stack
-{
+    bool isInputNotNull(string input);
+
+    bool isInputFirstCharacterCorrect(string input);
+
+    bool isNumberOfOperandsOperatorsCorrect(string input);
+
+    bool isCharacterBeforeAfterOperatorCorrect(string input);
+
+    void calculateOperation(Stack<Binary> &values, string input, int i, Binary n, Binary n2);
+
 public:
+    void checkInput(string input);
 
-    struct Node;
+    Binary calculate(Stack<Binary> &values, string input, bool permit);
 
-    struct Node* top;
-
-    void push(T value);
-
-    T pop();
-
-    void clear();
-
-    bool isEmpty();
+    void printBinary(Stack<Binary> &values, string input);
 };
-
-void isOperator(Stack<Binary>& values, string input, int i, Binary n, Binary n2);
-Binary calculate(Stack<Binary>& values, string input, bool permit);
-void printBinary(Stack<Binary>& values, string input);
-
-template class Stack<Binary>;
 
 #endif //ALGOLAB_CALCULATOR_H

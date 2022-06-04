@@ -6,4 +6,4 @@ set(PROJECT_SOURCES
         main.cpp
         )
 
-add_executable(AlgoLab main.cpp Binary.h Binary.cpp Calculator.h Calculator.cpp)
+add_executable(AlgoLab main.cpp Binary.h Binary.cpp Calculator.h Calculator.cpp Stack.h Stack.cpp)
