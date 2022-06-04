@@ -1,27 +1,28 @@
-//
-// Created by Дмитрий on 5/27/2022.
-//
-
 #ifndef ALGOLAB_BINARY_H
 #define ALGOLAB_BINARY_H
 
-long long power(int base, int exp);
-void input(int &dec1, char &operand, int &dec2);
+
+void performInput(int &dec1, char &operand, int &dec2);
 
 class Binary{
 private:
+
     static const int size = 8;
-    int *binary = new int[size];
-public:
-    Binary(int dec);
+    long long power(int base, int exp);
+    bool isHigherThanLowBorder();
     void reverse();
+
+
+public:
+
+    int *binary = new int[size];
+    Binary(int dec);
     int getSize();
-    void subtraction(Binary n);
-    void addition(Binary n);
-    void multiplication(Binary n);
-    void printer();
+    void subtract(Binary n);
+    void add(Binary n, bool type);
+    void multiply(Binary n);
+    void print();
     int getDecimal();
-    void input(int &dec1, char &operand, int &dec2);
 };
 
 #endif //ALGOLAB_BINARY_H

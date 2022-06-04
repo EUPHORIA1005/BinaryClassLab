@@ -1,3 +1,3 @@
-C:/Users/Дмитрий/CLionProjects/AlgoLab/cmake-build-debug/CMakeFiles/AlgoLab.dir
-C:/Users/Дмитрий/CLionProjects/AlgoLab/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Дмитрий/CLionProjects/AlgoLab/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/yadim/BinaryClassLab/cmake-build-debug/CMakeFiles/AlgoLab.dir
+C:/Users/yadim/BinaryClassLab/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/yadim/BinaryClassLab/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,54 +1,53 @@
 #include <iostream>
 #include "Binary.h"
+#include "Calculator.h"
 using namespace std;
 
 int main() {
-    /*int num1, num2;
-    bool permit(false);
-    char operand;
-    Binary n1 = Binary(0);
-    Binary n2 = Binary(0);
-    cout << "Current bitset is " << n1.getSize() << " bit.\n" << endl;
-    do {
-        try {
-            input(num1, operand, num2);
-            n1 = Binary(num1), n2 = Binary(num2);
+    bool permit;
+    string input;
+    Stack<Binary> values;
+    Binary result(Binary(0));
+    do
+    {
+        cout << "Enter the expression: ";
+        getline(cin, input);
+        try
+        {
+            checkInput(input);
             permit = true;
+            if (permit)
+            {
+                result = calculate(values, input, permit);
+                permit = true;
+            }
         }
-        catch (const char *msg) {
-            cout << "\nOverflow of the given number. Please, try inputting once again.\n" << endl;
+        catch (int excType)
+        {
+            switch (excType)
+            {
+                case 10:
+                {
+                    cout << "\nInvalid input.\n" << endl;
+                    break;
+                }
+                case 20:
+                {
+                    cout << "\nOverflow of the input value.\n" << endl;
+                    break;
+                }
+                case 100:
+                {
+                    cout << "\nThe calculated value is too large.\n" << endl;
+                    break;
+                }
+            }
+            permit = false;
+            if (!(values.isEmpty())) values.clear();
         }
-    } while (!permit);*/
-
-    Binary n1(-128);
-    Binary n2(127);
-    char operand('+');
-    cout << "\nFirst number in binary: ";
-    n1.printer();
-    cout << "Second number in binary: ";
-    n2.printer();
-    cout << endl;
-
-    try {
-        switch (operand) {
-            case '+':
-                n1.addition(n2);
-                break;
-
-            case '-':
-                n1.subtraction(n2);
-                break;
-
-            case '*':
-                n1.multiplication(n2);
-                break;
-        }
-        cout << "The result in binary: ";
-        n1.printer();
-        cout << "The result in decimal: ";
-        cout << n1.getDecimal() << endl;
-    }
-    catch (const char *msg) {
-        cout << "OVERFLOW: the calculated value is too large." << endl;
-    }
+    } while (!permit);
+    printBinary(values, input);
+    cout << "\n\nThe result is: " << result.getDecimal() << endl;
+    cout << "The result in binary is: ";
+    result.print(); cout << endl;
 }
